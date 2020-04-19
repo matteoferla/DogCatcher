@@ -2,6 +2,7 @@ from ._base_mixin import pyrosetta, _Base
 
 from typing import Optional, List, Union
 
+
 class _Relax(_Base):
 
     def relax_with_ED(self, pose, ccp4_file: str) -> None:
@@ -32,7 +33,7 @@ class _Relax(_Base):
 
     def relax_around_mover(self,
                            pose: pyrosetta.Pose,
-                           resi: int, chain:str,
+                           resi: int, chain: str,
                            scorefxn=None, cycles=5, distance=5, cartesian=False) -> None:
         """
         Relaxes pose ``distance`` around resi:chain.
@@ -62,7 +63,6 @@ class _Relax(_Base):
         relax.set_movemap(movemap)
         relax.cartesian(cartesian)
         relax.apply(pose)
-
 
     def relax_isopeptide(self, pose, cartesian=False, distance=7, cycles=5) -> None:
         or_sele = pyrosetta.rosetta.core.select.residue_selector.OrResidueSelector()

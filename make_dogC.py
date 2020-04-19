@@ -8,10 +8,11 @@ dogC = Catcher(lyx=9, asx=121, glh=70, asx_type='ASN', cut_resi=105, other_res=[
                trans_constraint_file='constraints/ASA-LYX.dogC.cst')
 ## Starting pose
 print('Starting pose')
-pose = dogC.load_pose_from_file('data/RrgA.altered.pdb')
+# pose = dogC.load_pose_from_file('data/RrgA.altered.pdb')
+pose = dogC.load_pose_from_file('../RrgA.relaxed.pdb')
 pymol.pymol_name('init')
 pymol.apply(pose)
-dogC.relax_with_ED(pose, 'data/2ww8.ccp4')
+# dogC.relax_with_ED(pose, 'data/2ww8.ccp4')
 pymol.apply(pose)
 logbook = {}
 s = dogC.get_score_panel(pose, save_variants=True, filename='models/00_initial')

@@ -4,9 +4,11 @@ from typing import Optional, List, Union
 
 from ._relax_mixin import _Relax, pyrosetta
 
+
 class _Make(_Relax):
 
-    def make_mutant(self, pose: pyrosetta.Pose, mutation, chain='A', constraint_file:Optional[str]=None) -> pyrosetta.Pose:
+    def make_mutant(self, pose: pyrosetta.Pose, mutation, chain='A',
+                    constraint_file: Optional[str] = None) -> pyrosetta.Pose:
         """
         Make a point mutant (``A23D``).
 
@@ -72,12 +74,9 @@ class _Make(_Relax):
         split_pose = self.make_quick_unreacted(pose)
         setup = pyrosetta.rosetta.protocols.constraint_movers.ClearConstraintsMover()
         setup.apply(split_pose)
-        relax = self.get_relax_iso(split_pose, cartesian=True, distance=1, cycles=15)
-        relax.apply(split_pose)
-        relax = self.get_relax_iso(split_pose)
-        relax.apply(split_pose)
+        self.relax_isopeptide(split_pose, cartesian=True, distance=1, cycles=15)
+        self.relax_isopeptide(split_pose)
         return split_pose
-
 
     def make_unbound(self, pose) -> pyrosetta.Pose:
         print('This fails to break the bond.')
@@ -103,8 +102,8 @@ class _Make(_Relax):
         MutateResidue(target=last_pos, new_res=f'{get_resn(last_pos)}:CtermProteinFull').apply(split_pose)
         MutateResidue(target=tag_pos, new_res=f'{get_resn(tag_pos)}:NtermProteinFull').apply(split_pose)
         ft = pyrosetta.FoldTree()
-        ft.add_edge(1, self.cut_resi -1, -1)  # chain
-        ft.add_edge(self.cut_resi -1, self.cut_resi, 1)  # jump
+        ft.add_edge(1, self.cut_resi - 1, -1)  # chain
+        ft.add_edge(self.cut_resi - 1, self.cut_resi, 1)  # jump
         ft.add_edge(self.cut_resi, self.total_residue(), -1)  # chain
         ft.add_edge(127, 128, 2)  # jump
         # ft.add_edge(127, 128, -1) # water
@@ -134,7 +133,7 @@ class _Make(_Relax):
         relax.apply(tag)
         return tag
 
-    def make_transition(self, pose, constraint_file:Optional[str]=None) -> pyrosetta.Pose:
+    def make_transition(self, pose, constraint_file: Optional[str] = None) -> pyrosetta.Pose:
         trans = pose.clone()
         MutateResidue = pyrosetta.rosetta.protocols.simple_moves.MutateResidue
         lys_pos = trans.pdb_info().pdb2pose(chain='A', res=self.lyx)
