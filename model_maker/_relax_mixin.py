@@ -31,8 +31,8 @@ class _Relax(_Base):
             relax.apply(pose)
 
     def relax_around_mover(self,
-                           resi: int, chain:str,
                            pose: pyrosetta.Pose,
+                           resi: int, chain:str,
                            scorefxn=None, cycles=5, distance=5, cartesian=False) -> None:
         """
         Relaxes pose ``distance`` around resi:chain.
@@ -66,7 +66,7 @@ class _Relax(_Base):
 
     def relax_isopeptide(self, pose, cartesian=False, distance=7, cycles=5) -> None:
         or_sele = pyrosetta.rosetta.core.select.residue_selector.OrResidueSelector()
-        for res in [self.lyx, self.asx, self.glh, *self.other_resn]:
+        for res in [self.lyx, self.asx, self.glh, *self.other_res]:
             if isinstance(res, int):
                 resi_sele = pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector()
                 resi_sele.set_index(pose.pdb_info().pdb2pose(chain=self.chain, res=res))

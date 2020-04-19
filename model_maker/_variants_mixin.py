@@ -47,7 +47,7 @@ class _Make(_Relax):
         assert rn == rex.group(1), f'residue {r}(pose)/{rex.group(2)}(pdb) is a {rn}, not a {rex.group()}'
         MutateResidue = pyrosetta.rosetta.protocols.simple_moves.MutateResidue
         MutateResidue(target=r, new_res=name3[rex.group(3)]).apply(mutant)
-        self.relax_around_mover(int(rex.group(2)), 'A', mutant, distance=7, cycles=15)
+        self.relax_around_mover(mutant, int(rex.group(2)), 'A', distance=7, cycles=15)
         return mutant
 
     def make_quick_unreacted(self, pose) -> pyrosetta.Pose:
@@ -118,7 +118,7 @@ class _Make(_Relax):
         catcher = self.make_quick_unreacted(pose)
         setup = pyrosetta.rosetta.protocols.constraint_movers.ClearConstraintsMover()
         setup.apply(catcher)
-        pyrosetta.rosetta.protocols.grafting.delete_region(catcher, self.cut_resi, self.total_residue())
+        pyrosetta.rosetta.protocols.grafting.delete_region(catcher, self.cut_resi, pose.total_residue())
         scorefxn = pyrosetta.get_fa_scorefxn()
         relax = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn, 5)
         relax.apply(catcher)

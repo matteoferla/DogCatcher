@@ -12,7 +12,7 @@ __version__ = "0.4"
 __citation__ = ""
 
 ########################################################################################################################
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict
 
 from ._base_mixin import _Base, pyrosetta  ### __init__ and basic io
 from ._relax_mixin import _Relax  ### relax methods
@@ -23,7 +23,7 @@ from Bio.SeqUtils.IsoelectricPoint import IsoelectricPoint
 
 class Catcher(_Make):  # _Make <- _Relax <- _Base
 
-    def get_score_panel(self, pose, save_variants=True, filename='pose'):
+    def get_score_panel(self, pose, save_variants=True, filename='pose') -> Dict[str, float]:
         scorefxn = pyrosetta.get_fa_scorefxn()
         catcher = self.make_catcher_only(pose)
         tag = self.make_tag_only(pose)
