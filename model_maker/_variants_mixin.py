@@ -20,6 +20,8 @@ class _Make(_Relax):
         """
         mutant = pose.clone()
         setup = pyrosetta.rosetta.protocols.constraint_movers.ConstraintSetMover()
+        if constraint_file is None:
+            constraint_file = self.iso_constraint_file
         setup.constraint_file(constraint_file)
         setup.apply(mutant)
         name3 = {'A': 'ALA',
@@ -147,7 +149,7 @@ class _Make(_Relax):
             raise ValueError(f'What is a {self.asx_type}')
         setup = pyrosetta.rosetta.protocols.constraint_movers.ClearConstraintsMover()
         setup.apply(trans)
-        if constraint_file:
+        if constraint_file is None:
             constraint_file = self.trans_constraint_file
         setup = pyrosetta.rosetta.protocols.constraint_movers.ConstraintSetMover()
         setup.constraint_file(constraint_file)
