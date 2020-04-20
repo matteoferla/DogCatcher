@@ -1,9 +1,29 @@
 # DogCatcher
-Manuscript in preparation...
+Manuscript in preparation.
 
-# Catcher
+Engineering of a new orthogonal pair of catcher–tag. This repo features code to create variants of isopeptide bonded protein.
 
-``model_maker.Catcher`` is class to create catcher variants as see in ``make_dogC.py`` using PyRosetta.
+![DogC](DogC.png)
+
+# Models
+
+the class ``model_maker.Catcher`` was used to create catcher variants with the script ``make_dogC.py`` using PyRosetta.
+This has been written to be flexible and generally applicable to isopeptide bonds —see below.
+
+Internal note: the variants generated with this class differ slightly from those in unpublished analyses predicting mutants
+involved in the engineering of DogC. The reason for this is that a multitude of models were made with differing settings.
+Especially for the A75P variant ——herein the protocol for that loop is
+20 cycles of cartesian FastRelax on the loop (73–80) with 0.1 weighted `omega` and 0.1 weighted `fa_rep`, followed by 20 cycles of internal coordinate FastRelax on the loop (73–80).
+Previously remodel of the loop with `generic_aa` set to glycine to allow  the sampling of cis-proline, along with forcing the ABEGO type to cis (O) for either of the proline pair,
+did not result in a better scoring model.
+
+The tetrahedral transition state is not chiral for an aspartate–lysine sidechain conjugation (a hemiacetal), but it is for
+an asparagine–lysine sidechain conjugation (hemiamidal). Here only one chirality is sampled and is based upon visual inspection of the model.
+
+
+
+# Catcher module
+
 Class initialisation just sets the parameters.
 
     dogC = Catcher(lyx=9, asx=121, glh=70, asx_type='ASN', cut_resi=105, other_res=['WAT'],

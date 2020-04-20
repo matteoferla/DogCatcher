@@ -6,6 +6,26 @@ from ._relax_mixin import _Relax, pyrosetta
 
 
 class _Make(_Relax):
+    _name3 = {'A': 'ALA',
+             'C': 'CYS',
+             'D': 'ASP',
+             'E': 'GLU',
+             'F': 'PHE',
+             'G': 'GLY',
+             'H': 'HIS',
+             'I': 'ILE',
+             'L': 'LEU',
+             'K': 'LYS',
+             'M': 'MET',
+             'N': 'ASN',
+             'P': 'PRO',
+             'Q': 'GLN',
+             'R': 'ARG',
+             'S': 'SER',
+             'T': 'THR',
+             'V': 'VAL',
+             'W': 'TRP',
+             'Y': 'TYR'}
 
     def make_mutant(self, pose: pyrosetta.Pose, mutation, chain='A',
                     constraint_file: Optional[str] = None) -> pyrosetta.Pose:
@@ -24,34 +44,35 @@ class _Make(_Relax):
             constraint_file = self.iso_constraint_file
         setup.constraint_file(constraint_file)
         setup.apply(mutant)
-        name3 = {'A': 'ALA',
-                 'C': 'CYS',
-                 'D': 'ASP',
-                 'E': 'GLU',
-                 'F': 'PHE',
-                 'G': 'GLY',
-                 'H': 'HIS',
-                 'I': 'ILE',
-                 'L': 'LEU',
-                 'K': 'LYS',
-                 'M': 'MET',
-                 'N': 'ASN',
-                 'P': 'PRO',
-                 'Q': 'GLN',
-                 'R': 'ARG',
-                 'S': 'SER',
-                 'T': 'THR',
-                 'V': 'VAL',
-                 'W': 'TRP',
-                 'Y': 'TYR'}
         pose2pdb = pose.pdb_info().pdb2pose
         rex = re.match('(\w)(\d+)(\w)', mutation)
         r = pose2pdb(res=int(rex.group(2)), chain=chain)
         rn = pose.residue(r).name1()
         assert rn == rex.group(1), f'residue {r}(pose)/{rex.group(2)}(pdb) is a {rn}, not a {rex.group()}'
         MutateResidue = pyrosetta.rosetta.protocols.simple_moves.MutateResidue
-        MutateResidue(target=r, new_res=name3[rex.group(3)]).apply(mutant)
+        MutateResidue(target=r, new_res=self._name3[rex.group(3)]).apply(mutant)
         self.relax_around_mover(mutant, int(rex.group(2)), 'A', distance=7, cycles=15)
+        return mutant
+
+    def make_double_mutant(self, pose: pyrosetta.Pose, mutations: List[str], chain='A',
+                    constraint_file: Optional[str] = None) -> pyrosetta.Pose:
+        mutant = pose.clone()
+        setup = pyrosetta.rosetta.protocols.constraint_movers.ConstraintSetMover()
+        if constraint_file is None:
+            constraint_file = self.iso_constraint_file
+        setup.constraint_file(constraint_file)
+        setup.apply(mutant)
+        pose2pdb = pose.pdb_info().pdb2pose
+        MutateResidue = pyrosetta.rosetta.protocols.simple_moves.MutateResidue
+        m = []
+        for mutation in mutations:
+            rex = re.match('(\w)(\d+)(\w)', mutation)
+            r = pose2pdb(res=int(rex.group(2)), chain=chain)
+            rn = pose.residue(r).name1()
+            assert rn == rex.group(1), f'residue {r}(pose)/{rex.group(2)}(pdb) is a {rn}, not a {rex.group()}'
+            MutateResidue(target=r, new_res=self._name3[rex.group(3)]).apply(mutant)
+            m.append(int(rex.group(2)))
+        self.relax_pair_mover(mutant, m, 'A', distance=7, cycles=15)
         return mutant
 
     def make_quick_unreacted(self, pose) -> pyrosetta.Pose:
@@ -111,7 +132,7 @@ class _Make(_Relax):
         # ft.add_edge(127, 128, -1) # water
         print(str(ft), ft.check_fold_tree())
         split_pose.fold_tree(ft)
-        relax = self.relax_iso(split_pose)
+        relax = self.relax_isopeptide(split_pose)
         relax.apply(split_pose)
         return split_pose
 
@@ -120,9 +141,7 @@ class _Make(_Relax):
         setup = pyrosetta.rosetta.protocols.constraint_movers.ClearConstraintsMover()
         setup.apply(catcher)
         pyrosetta.rosetta.protocols.grafting.delete_region(catcher, self.cut_resi, pose.total_residue())
-        scorefxn = pyrosetta.get_fa_scorefxn()
-        relax = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn, 5)
-        relax.apply(catcher)
+        self.relax_simple(catcher, 3)
         return catcher
 
     def make_tag_only(self, pose) -> pyrosetta.Pose:
@@ -130,9 +149,7 @@ class _Make(_Relax):
         pyrosetta.rosetta.protocols.grafting.delete_region(tag, 1, self.cut_resi - 1)
         setup = pyrosetta.rosetta.protocols.constraint_movers.ClearConstraintsMover()
         setup.apply(tag)
-        scorefxn = pyrosetta.get_fa_scorefxn()
-        relax = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn, 15)
-        relax.apply(tag)
+        self.relax_simple(tag, 15)
         return tag
 
     def make_transition(self, pose, constraint_file: Optional[str] = None) -> pyrosetta.Pose:
