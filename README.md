@@ -1,7 +1,10 @@
 # DogCatcher
-Manuscript in preparation.
 
 Engineering of a new orthogonal pair of catcher–tag. This repo features code to create variants of isopeptide bonded protein.
+
+Parts of this code was used to do design predictions that went into [Keeble et al 2022](https://www.sciencedirect.com/science/article/pii/S2451945621003159).
+
+> No working data is present in this repo
 
 ![DogC](DogC.png)
 
