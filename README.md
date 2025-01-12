@@ -2,13 +2,15 @@
 
 Engineering of a new orthogonal pair of catcher–tag. This repo features code to create variants of isopeptide bonded protein.
 
-Parts of this code was used to do design predictions that went into [Keeble et al 2022](https://www.sciencedirect.com/science/article/pii/S2451945621003159).
-
-> No working data is present in this repo
+* Parts of this code was used to do design predictions that went into [Keeble et al 2022](https://www.sciencedirect.com/science/article/pii/S2451945621003159).
+* No working data is present in this repo
+* The core of this work was done in 2018. This repo is not maintained. Subsequent 'afterhours' work can be found in [isopeptide-builder repo](https://github.com/matteoferla/isopeptide-builder). For discussion on isopeptide bonds see [blog post](https://blog.matteoferla.com/2018/09/everything-you-wanted-to-know-about.html).
 
 ![DogC](DogC.png)
 
 # Models
+
+[Interactive page](https://michelanglo.sgc.ox.ac.uk/data/1980b506-c393-4c9e-9f90-a77a89a4b5fd).
 
 the class ``model_maker.Catcher`` was used to create catcher variants with the script ``make_dogC.py`` using PyRosetta.
 This has been written to be flexible and generally applicable to isopeptide bonds —see below.
